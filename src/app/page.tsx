@@ -1,6 +1,39 @@
-import Image from 'next/image'
+import Image from 'next/image';
+import {
+  ApolloClient,
+  InMemoryCache,
+  ApolloProvider,
+  gql,
+} from '@apollo/client';
 
-export default function Home() {
+const client = new ApolloClient({
+  uri: 'https://rickandmortyapi.com/graphql',
+  cache: new InMemoryCache(),
+});
+
+async function getData() {
+  client
+    .query({
+      query: gql`
+        query GetCharacters {
+          characters {
+            results {
+              id
+              name
+            }
+          }
+        }
+      `,
+    })
+    .then((result) => {
+      const chars = result.data.characters;
+      console.log(chars);
+    });
+}
+
+export default async function Home() {
+  const data = await getData();
+
   return (
     <main className="flex min-h-screen flex-col items-center justify-between p-24">
       <div className="z-10 max-w-5xl w-full items-center justify-between font-mono text-sm lg:flex">
@@ -109,5 +142,5 @@ export default function Home() {
         </a>
       </div>
     </main>
-  )
+  );
 }
